@@ -3,7 +3,7 @@
 PImage surf; // imagen que entrega el fitness
 
 // ===============================================================
-int puntos = 30;
+int puntos = 2000;
 Particle[] fl; // arreglo de partículas
 float d = 15; // radio del círculo, solo para despliegue
 float gbestx, gbesty, gbest; // posición y fitness del mejor global
@@ -13,8 +13,8 @@ int evals = 0, evals_to_best = 0; //número de evaluaciones, sólo para desplieg
 float maxv = 0.025; // max velocidad (modulo)
 
 //Dominio de la funcion
-float min = -3;
-float max = 7;
+float min = -4.5; //-3
+float max = 4.5; // 7
 
 float BestValues[] = new float[100];
 int BestValues_i[] = new int[100];
@@ -29,23 +29,18 @@ class Particle{
     
     x = random (min,max); y = random(min,max);
     vx = random(-1,1) ; vy = random(-1,1);
-    pfit = -1; fit = -1; //asumiendo que no hay valores menores a -1 en la función de evaluación
+
+    pfit = pow(10,5); fit = pow(10,5); //Numero menor inicial (nunca hay uno menor que este)
+    //pfit = -1; fit = -1; //asumiendo que no hay valores menores a -1 en la función de evaluación
   }
   
   // ---------------------------- Evalúa partícula
-  float f(float x, float y) {
-  return x*x + y*y;
-   
-  } 
-  //------------- 
 
 
-  //Esta funcion no iria, ya que saca la funcion a partir de la imagen
   float Eval(){ //recibe imagen que define función de fitness
     evals++;
     //color c=surf.get(int(x),int(y)); // obtiene color de la imagen en posición (x,y)
     //fit = red(c); //evalúa por el valor de la componente roja de la imagen
-    //ola ola gerson andrade meza
     fit = 10*2 + pow(x,2) - 10*cos(2*PI*x) + pow(y,2) - 10*cos(2*PI*y);
 
       
@@ -70,14 +65,14 @@ class Particle{
     //actualiza velocidad (fórmula con factores de aprendizaje C1 y C2)
 
     //Creo que debemos usar esta
-    //vx = vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
-    //vy = vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
+    vx = vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
+    vy = vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
     //actualiza velocidad (fórmula con inercia, p.250)
     //vx = w * vx + random(0,1)*(px - x) + random(0,1)*(gbestx - x);
     //vy = w * vy + random(0,1)*(py - y) + random(0,1)*(gbesty - y);
     //actualiza velocidad (fórmula mezclada)
-    vx = w * vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
-    vy = w * vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
+    //vx = w * vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
+    //vy = w * vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
     // trunca velocidad a maxv
     float modu = sqrt(vx*vx + vy*vy);
     if (modu > maxv){
@@ -97,7 +92,7 @@ class Particle{
 
     //Esto no lo entiendo
     int ejeX = int( (max+x)/(2*max) * width );
-    int ejeY = int( abs(y-max)/(2*max) * height );
+    int ejeY = int( abs(y-min)/(2*max) * height );
     
     color c=surf.get(ejeX, ejeY);
     fill(c);
@@ -165,6 +160,7 @@ void draw(){
   for(int i = 0;i<puntos;i++){
     fl[i].move();
     fl[i].Eval();
+    
   }
   
 }
