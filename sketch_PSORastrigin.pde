@@ -37,14 +37,12 @@ class Particle{
   // ---------------------------- Evalúa partícula
 
 
-  float Eval(){ //recibe imagen que define función de fitness
+  float Eval(){
     evals++;
     //color c=surf.get(int(x),int(y)); // obtiene color de la imagen en posición (x,y)
     //fit = red(c); //evalúa por el valor de la componente roja de la imagen
     fit = 10*2 + pow(x,2) - 10*cos(2*PI*x) + pow(y,2) - 10*cos(2*PI*y);
 
-      
-    //Acá lo dejare igual por mientras
     if(fit < pfit){ // actualiza local best si es mejor
       pfit = fit;
       px = x;
