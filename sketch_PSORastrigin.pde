@@ -3,7 +3,7 @@
 PImage surf; // imagen que entrega el fitness
 
 // ===============================================================
-int puntos = 2000;
+int puntos = 100;
 Particle[] fl; // arreglo de partículas
 float d = 15; // radio del círculo, solo para despliegue
 float gbestx, gbesty, gbest; // posición y fitness del mejor global
@@ -13,8 +13,8 @@ int evals = 0, evals_to_best = 0; //número de evaluaciones, sólo para desplieg
 float maxv = 0.025; // max velocidad (modulo)
 
 //Dominio de la funcion
-float min = -4.5; //-3
-float max = 4.5; // 7
+float min = -3; //-3
+float max = 7; // 7
 
 float BestValues[] = new float[100];
 int BestValues_i[] = new int[100];
@@ -62,15 +62,14 @@ class Particle{
   void move(){
     //actualiza velocidad (fórmula con factores de aprendizaje C1 y C2)
 
-    //Creo que debemos usar esta
-    vx = vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
-    vy = vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
+    //vx = vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
+    //vy = vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
     //actualiza velocidad (fórmula con inercia, p.250)
     //vx = w * vx + random(0,1)*(px - x) + random(0,1)*(gbestx - x);
     //vy = w * vy + random(0,1)*(py - y) + random(0,1)*(gbesty - y);
     //actualiza velocidad (fórmula mezclada)
-    //vx = w * vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
-    //vy = w * vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
+    vx = w * vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
+    vy = w * vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
     // trunca velocidad a maxv
     float modu = sqrt(vx*vx + vy*vy);
     if (modu > maxv){
@@ -88,9 +87,11 @@ class Particle{
   // ------------------------------ despliega partícula
   void display(){
 
-    //Esto no lo entiendo
-    int ejeX = int( (max+x)/(2*max) * width );
-    int ejeY = int( abs(y-min)/(2*max) * height );
+    //int ejeX = int( (max+x)/(2*max) * width );
+    //int ejeY = int( abs(y-min)/(2*max) * height );
+    
+    int ejeX = int( (max+x)/( abs(min) + max) * 1024 );
+    int ejeY = int( abs(y-min)/( abs(min) + max) * 1024 );
     
     color c=surf.get(ejeX, ejeY);
     fill(c);
@@ -106,15 +107,18 @@ class Particle{
 // dibuja punto azul en la mejor posición y despliega números
 void despliegaBest(){
   
-  int bestEjeX = int( (max+gbestx)/(2*max) * width );
+  ///int bestEjeX = int( (max+gbestx)/(2*max) * width );
   //Quizas aca es abs(gbesty-min)
-  int bestEjeY = int( abs(gbesty-min)/(2*max) * height);
+  ///int bestEjeY = int( abs(gbesty-min)/(2*max) * height);
+  int bestEjeX = int( (max+gbestx)/( abs(min) + max) * 1024 );
+  int bestEjeY = int( abs(gbesty-min)/( abs(min) + max) * 1024 );
+  
   
   fill(#0000ff);
   ellipse(bestEjeX,bestEjeY,d,d);
   PFont f = createFont("Arial",16,true);
   textFont(f,15);
-  fill(#00ff00);
+  fill(#ff0000);
   text("Best fitness: "+str(gbest)+"\nEvals to best: "+str(evals_to_best)+"\nEvals: "+str(evals),10,20);
 }
 
@@ -125,8 +129,8 @@ void setup(){
   //size(1440,720); //setea width y height
   //surf = loadImage("marscyl2.jpg");
   
-  size(575,321); //setea width y height (de acuerdo al tamaño de la imagen)
-  surf = loadImage("rastrigin.png");
+  size(1024,1024); //setea width y height (de acuerdo al tamaño de la imagen)
+  surf = loadImage("rastrigin.jpg");
   
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   smooth();
