@@ -1,7 +1,6 @@
 // PSO de acuerdo a Talbi (p.247 ss)
 
 PImage surf; // imagen que entrega el fitness
-
 // ===============================================================
 int puntos = 100;
 Particle[] fl; // arreglo de partículas
