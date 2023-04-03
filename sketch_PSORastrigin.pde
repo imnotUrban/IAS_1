@@ -11,6 +11,12 @@ float C1 = 30, C2 =  10; // learning factors (C1: own, C2: social) (ok)
 int evals = 0, evals_to_best = 0; //número de evaluaciones, sólo para despliegue
 float maxv = 0.025; // max velocidad (modulo)
 
+//Iteraciones ------- Convergencia
+int iteraciones = 100;   //Veces que se corre le experimento
+int busquedas = 100000; //máxima cantidad de evals que se pueden dar
+
+
+
 //Dominio de la funcion
 float min = -3; //-3
 float max = 7; // 7
@@ -147,6 +153,8 @@ void setup(){
   //Inicializamos en -1 los mejores valores
   for(int i=0; i<100; i++)
     BestValues_i[i] = -1;
+    
+    
 }
 
 void draw(){
