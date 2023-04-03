@@ -1,6 +1,12 @@
 // PSO de acuerdo a Talbi (p.247 ss)
 
 PImage surf; // imagen que entrega el fitness
+//Creación de archivos.txt
+PrintWriter TXTprom;
+PrintWriter TXTmin;
+
+//
+PGraphics pg1;
 // ===============================================================
 int puntos = 100;
 Particle[] fl; // arreglo de partículas
@@ -11,9 +17,9 @@ float C1 = 30, C2 =  10; // learning factors (C1: own, C2: social) (ok)
 int evals = 0, evals_to_best = 0; //número de evaluaciones, sólo para despliegue
 float maxv = 0.025; // max velocidad (modulo)
 
-//Iteraciones ------- Convergencia
-int iteraciones = 100;   //Veces que se corre le experimento
-int busquedas = 100000; //máxima cantidad de evals que se pueden dar
+// ------- Convergencia Grafico
+int iteracion = 0;
+float promedio = 0; //máxima cantidad de evals que se pueden dar
 
 
 
@@ -130,29 +136,41 @@ void despliegaBest(){
 // ===============================================================
 
 void setup(){  
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  //size(1440,720); //setea width y height
-  //surf = loadImage("marscyl2.jpg");
-  
-  size(1024,1024); //setea width y height (de acuerdo al tamaño de la imagen)
-  surf = loadImage("rastrigin.jpg");
-  
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  smooth();
-  // crea arreglo de objetos partículas
-  fl = new Particle[puntos];
-  //Se inicializa por defecto a la primera particula como la mejor
-  fl[0] = new Particle();
-  gbest = fl[0].fit;
-  gbestx = fl[0].x;
-  gbesty = fl[0].y;
-  
-  for(int i = 1;i < puntos;i++)
-    fl[i] = new Particle();
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   //size(1440,720); //setea width y height
+   //surf = loadImage("marscyl2.jpg");
+   size(1024,1024); //setea width y height (de acuerdo al tamaño de la imagen)
+   surf = loadImage("rastrigin.jpg");
 
-  //Inicializamos en -1 los mejores valores
-  for(int i=0; i<100; i++)
-    BestValues_i[i] = -1;
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   smooth();
+  
+   //-----------------------Guardará en un archivo de texto tanto los mejores como el promedio---------
+
+   TXTprom = createWriter("TXTprom.txt");
+   TXTmin = createWriter("TXTmin.txt");
+   
+   //---------------------------------------
+
+
+   // crea arreglo de objetos partículas
+   fl = new Particle[puntos];
+   //Se inicializa por defecto a la primera particula como la mejor
+   fl[0] = new Particle();
+   gbest = fl[0].fit;
+   gbestx = fl[0].x;
+   gbesty = fl[0].y;
+    
+   for(int i = 1;i < puntos;i++)
+     fl[i] = new Particle();
+  
+   //Inicializamos en -1 los mejores valores
+   for(int i=0; i<100; i++)
+     BestValues_i[i] = -1;
+      
+    
+  
+  
     
     
 }
@@ -171,5 +189,33 @@ void draw(){
     fl[i].Eval();
     
   }
+  //Calcula promedio
+  promedio = 0;
+  for(int i = 0; i<puntos; i++){
+    promedio = promedio + fl[i].Eval();
+  }
+  promedio = promedio/puntos;
+  
+  //Escribe en cada iteracion
+  TXTprom.println(promedio);
+  TXTmin.println(str(gbest));
+  
+  if(iteracion%100==0){
+    println("porcentaje evaluado: ");
+    println(iteracion*100/10000);
+    println(iteracion);
+  }
+  
+  
+  if(iteracion > 10000){
+    //Termina con los textos
+    TXTprom.flush(); // Writes the remaining data to the file
+    TXTprom.close(); // Finishes the file
+    TXTmin.flush(); // Writes the remaining data to the file
+    TXTmin.close(); // Finishes the file
+    exit();   //Termina a la iteración indicada
+  }
+  iteracion++;
+  
   
 }
