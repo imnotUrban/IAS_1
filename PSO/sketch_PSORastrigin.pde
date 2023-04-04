@@ -11,14 +11,14 @@ int puntos = 100;
 Particle[] fl; // arreglo de partículas
 float d = 15; // radio del círculo, solo para despliegue
 float gbestx, gbesty, gbest; // posición y fitness del mejor global
-float w = 1000; // inercia: baja (~50): explotación, alta (~5000): exploración (2000 ok)
+float w = 2000; // inercia: baja (~50): explotación, alta (~5000): exploración (2000 ok)
 float C1 = 30, C2 =  10; // learning factors (C1: own, C2: social) (ok)
 int evals = 0, evals_to_best = 0; //número de evaluaciones, sólo para despliegue
 float maxv = 0.025; // max velocidad (modulo)
 
 //Iteraciones ------- Convergencia
 int iteracion = 0;   //Veces que se corre le experimento
-int busquedas = 500; //máxima cantidad de evals que se pueden dar
+int busquedas = 1000; //máxima cantidad de evals que se pueden dar (Se refiere a los movimientos, no por particula)
 float promedio = 0;
 
 
@@ -76,8 +76,10 @@ class Particle{
     //vx = vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
     //vy = vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
     //actualiza velocidad (fórmula con inercia, p.250)
+    
     //vx = w * vx + random(0,1)*(px - x) + random(0,1)*(gbestx - x);
     //vy = w * vy + random(0,1)*(py - y) + random(0,1)*(gbesty - y);
+    
     //actualiza velocidad (fórmula mezclada)
     vx = w * vx + random(0,1)*C1*(px - x) + random(0,1)*C2*(gbestx - x);
     vy = w * vy + random(0,1)*C1*(py - y) + random(0,1)*C2*(gbesty - y);
@@ -139,7 +141,7 @@ void setup(){
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //size(1440,720); //setea width y height
   //surf = loadImage("marscyl2.jpg");
-  
+  randomSeed(304957);
   size(1024,1024); //setea width y height (de acuerdo al tamaño de la imagen)
   surf = loadImage("rastrigin.jpg");
   
@@ -211,6 +213,8 @@ void draw(){
     TXTprom.close(); // Finishes the file
     TXTmin.flush(); // Writes the remaining data to the file
     TXTmin.close(); // Finishes the file
+    
+    delay(5000);
     exit();   //Termina a la iteración indicada
   }
   iteracion++;
