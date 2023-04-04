@@ -1,11 +1,22 @@
 PImage surf;
 //display
+//Creación de archivos.txt
+PrintWriter TXTprom;
+PrintWriter TXTmin;
+
+
 float d = 15;
 
 int evals = 0;
 int tamPoblacion = 100;
 int tamPoblacionAct = tamPoblacion;
 Particle[] poblacion = new Particle[tamPoblacionAct];
+
+// ------- Convergencia Grafico
+int iteracion = 0;
+float promedio = 0; //máxima cantidad de evals que se pueden dar
+
+
 //Dominio de la funcion
 float min = -3; //
 float max = 7; //
@@ -15,7 +26,7 @@ Particle[] seleccionados = new Particle[numSeleccionados];
 Particle[] torneo = new Particle[tamTorneo];
 //cruzamiento
 //mutacion
-float variacion = 0.6;
+float variacion = 0.01;
 
 class Particle {
   float x, y, fit; // current position(x-vector)  and fitness (x-fitness)
@@ -90,6 +101,15 @@ void setup() {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     smooth();
+   
+   //-----------------------Guardará en un archivo de texto tanto los mejores como el promedio---------
+
+   TXTprom = createWriter("TXTprom.txt");
+   TXTmin = createWriter("TXTmin.txt");
+   
+   //---------------------------------------
+    
+    
     // crea arreglo de objetos partículas
     poblacion = new Particle[tamPoblacionAct];
     
@@ -107,10 +127,40 @@ void draw() {
       if(poblacion[i].fit>poblacion[z].fit) z = i;
     }
     print(" el mejor tiene un fit de : " + poblacion[z].fit + "\n");
-    delay(500);
+    delay(50);
     seleccionTorneo();
     cruzamiento();
     mutacion();
+    
+    
+    //ESCRITURA DENTRO DEL TEXTO
+    //Calcula promedio
+  promedio = 0;
+  for(int i = 0; i<tamPoblacion; i++){
+    promedio = promedio + poblacion[i].Eval();
+  }
+  promedio = promedio/tamPoblacionAct;
+  
+  //Escribe en cada iteracion
+  TXTprom.println(promedio);
+  TXTmin.println(str(poblacion[z].fit));
+  
+  if(iteracion%100==0){
+    println("porcentaje evaluado: ");
+    println(iteracion*100/2500);
+    println(iteracion);
+  }
+  
+  
+  if(iteracion > 2500){
+    //Termina con los textos
+    TXTprom.flush(); // Writes the remaining data to the file
+    TXTprom.close(); // Finishes the file
+    TXTmin.flush(); // Writes the remaining data to the file
+    TXTmin.close(); // Finishes the file
+    exit();   //Termina a la iteración indicada
+  }
+  iteracion++;
     
     
 }

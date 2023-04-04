@@ -1,5 +1,10 @@
 // PSO de acuerdo a Talbi (p.247 ss)
 
+//Creación de archivos.txt
+PrintWriter TXTprom;
+PrintWriter TXTmin;
+
+
 PImage surf; // imagen que entrega el fitness
 // ===============================================================
 int puntos = 100;
@@ -12,8 +17,9 @@ int evals = 0, evals_to_best = 0; //número de evaluaciones, sólo para desplieg
 float maxv = 0.025; // max velocidad (modulo)
 
 //Iteraciones ------- Convergencia
-int iteraciones = 100;   //Veces que se corre le experimento
-int busquedas = 100000; //máxima cantidad de evals que se pueden dar
+int iteracion = 0;   //Veces que se corre le experimento
+int busquedas = 500; //máxima cantidad de evals que se pueden dar
+float promedio = 0;
 
 
 
@@ -139,6 +145,14 @@ void setup(){
   
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   smooth();
+  
+  
+  //-----------------------Guardará en un archivo de texto tanto los mejores como el promedio---------
+
+   TXTprom = createWriter("TXTprom.txt");
+   TXTmin = createWriter("TXTmin.txt");
+   
+   //---------------------------------------
   // crea arreglo de objetos partículas
   fl = new Particle[puntos];
   //Se inicializa por defecto a la primera particula como la mejor
@@ -171,5 +185,35 @@ void draw(){
     fl[i].Eval();
     
   }
+  
+    //ESCRITURA DENTRO DEL TEXTO
+    //Calcula promedio
+  promedio = 0;
+  for(int i = 0; i<puntos; i++){
+    promedio = promedio + fl[i].Eval();
+  }
+  promedio = promedio/puntos;
+  
+  //Escribe en cada iteracion
+  TXTprom.println(promedio);
+  TXTmin.println(str(gbest));
+  
+  if(iteracion%100==0){
+    println("porcentaje evaluado: ");
+    println(iteracion*100/busquedas);
+    println(iteracion);
+  }
+  
+  
+  if(iteracion > busquedas){
+    //Termina con los textos
+    TXTprom.flush(); // Writes the remaining data to the file
+    TXTprom.close(); // Finishes the file
+    TXTmin.flush(); // Writes the remaining data to the file
+    TXTmin.close(); // Finishes the file
+    exit();   //Termina a la iteración indicada
+  }
+  iteracion++;
+    
   
 }
